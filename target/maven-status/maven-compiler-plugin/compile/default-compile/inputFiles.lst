@@ -1,0 +1,8 @@
+/home/matheus-berwaldt/Área de trabalho/librarymanager/src/main/java/com/librarymanager/LibrarymanagerApplication.java
+/home/matheus-berwaldt/Área de trabalho/librarymanager/src/main/java/com/librarymanager/controller/SocioController.java
+/home/matheus-berwaldt/Área de trabalho/librarymanager/src/main/java/com/librarymanager/model/Compra.java
+/home/matheus-berwaldt/Área de trabalho/librarymanager/src/main/java/com/librarymanager/model/Emprestimo.java
+/home/matheus-berwaldt/Área de trabalho/librarymanager/src/main/java/com/librarymanager/model/Livro.java
+/home/matheus-berwaldt/Área de trabalho/librarymanager/src/main/java/com/librarymanager/model/Socio.java
+/home/matheus-berwaldt/Área de trabalho/librarymanager/src/main/java/com/librarymanager/repository/SocioRepository.java
+/home/matheus-berwaldt/Área de trabalho/librarymanager/src/main/java/com/librarymanager/service/SocioService.java

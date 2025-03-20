@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electron Frontend</title>
+</head>
+<body>
+    <h1>Frontend Electron</h1>
+    <button id="fetchBtn">Buscar Dados</button>
+    <p id="response"></p>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        document.getElementById('fetchBtn').addEventListener('click', async () => {
+            const data = await ipcRenderer.invoke('fetch-data');
+            document.getElementById('response').innerText = data;
+        });
+    </script>
+</body>
+</html>
