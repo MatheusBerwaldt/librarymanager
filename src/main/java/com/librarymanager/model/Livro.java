@@ -1,20 +1,22 @@
 package com.librarymanager.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "/livros")
+@Table(name = "livros")
 public class Livro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idLivro;
+    private Long idLivro; // Alterado para Long
 
     @Column(nullable = false)
     private String autorLivro;
@@ -24,18 +26,36 @@ public class Livro {
 
     private String editora;
 
-    @Column(unique = true)
     private String codBarras;
 
-    private boolean emprestado;
+    private boolean disponivel;
 
     private double precoLivro;
 
-    public int getIdLivro() {
+    @ManyToMany(mappedBy = "livros")
+    private List<Emprestimo> emprestimos;
+
+    // Construtor padrão
+    public Livro() {
+    }
+
+    // Construtor com parâmetros
+    public Livro(Long idLivro, String autorLivro, LocalDate dataLancamento, String editora, String codBarras, boolean disponivel, double precoLivro) {
+        this.idLivro = idLivro;
+        this.autorLivro = autorLivro;
+        this.dataLancamento = dataLancamento;
+        this.editora = editora;
+        this.codBarras = codBarras;
+        this.disponivel = disponivel;
+        this.precoLivro = precoLivro;
+    }
+
+    // Getters e Setters
+    public Long getIdLivro() {
         return idLivro;
     }
 
-    public void setIdLivro(int idLivro) {
+    public void setIdLivro(Long idLivro) {
         this.idLivro = idLivro;
     }
 
@@ -71,12 +91,12 @@ public class Livro {
         this.codBarras = codBarras;
     }
 
-    public boolean isEmprestado() {
-        return emprestado;
+    public boolean isDisponivel() {
+        return disponivel;
     }
 
-    public void setEmprestado(boolean emprestado) {
-        this.emprestado = emprestado;
+    public void setDisponivel(boolean disponivel) {
+        this.disponivel = disponivel;
     }
 
     public double getPrecoLivro() {
@@ -85,5 +105,18 @@ public class Livro {
 
     public void setPrecoLivro(double precoLivro) {
         this.precoLivro = precoLivro;
+    }
+
+    public List<Emprestimo> getEmprestimos() {
+        return emprestimos;
+    }
+
+    public void setEmprestimos(List<Emprestimo> emprestimos) {
+        this.emprestimos = emprestimos;
+    }
+
+    // Método adicional para verificar se o livro está emprestado
+    public boolean isEmprestado() {
+        return !disponivel;
     }
 }

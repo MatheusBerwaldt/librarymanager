@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.librarymanager.model.Livro;
 
 @Repository
-public interface LivroRepository extends JpaRepository<Livro, Integer> {
-    
+public interface LivroRepository extends JpaRepository<Livro, Long> { // Alterado para Long
 }

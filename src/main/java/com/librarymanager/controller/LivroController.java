@@ -22,19 +22,19 @@ public class LivroController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Livro> buscarPorId(@PathVariable int id) {
+    public ResponseEntity<Livro> buscarPorId(@PathVariable Long id) { // Alterado para Long
         Optional<Livro> livro = livroService.buscarPorId(id);
         return livro.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Livro adicionarLivro(@RequestBody Livro livro) {
+    public Livro criarLivro(@RequestBody Livro livro) {
         return livroService.salvarLivro(livro);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Livro> atualizarLivro(@PathVariable int id, @RequestBody Livro livroAtualizado) {
+    public ResponseEntity<Livro> atualizarLivroPorId(@PathVariable Long id, @RequestBody Livro livroAtualizado) { // Alterado para Long
         try {
             Livro livro = livroService.atualizarLivro(id, livroAtualizado);
             return ResponseEntity.ok(livro);
@@ -44,8 +44,12 @@ public class LivroController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarLivro(@PathVariable int id) {
-        livroService.deletarLivro(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deletarLivro(@PathVariable Long id) { // Alterado para Long
+        try {
+            livroService.deletarLivro(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();  // Caso o livro não seja encontrado para excluir
+        }
     }
 }

@@ -18,7 +18,7 @@ public class LivroService {
         return livroRepository.findAll();
     }
 
-    public Optional<Livro> buscarPorId(int id) {
+    public Optional<Livro> buscarPorId(Long id) { // Alterado para Long
         return livroRepository.findById(id);
     }
 
@@ -26,20 +26,22 @@ public class LivroService {
         return livroRepository.save(livro);
     }
 
-    public Livro atualizarLivro(int id, Livro livroAtualizado) {
+    public Livro atualizarLivro(Long id, Livro livroAtualizado) { // Alterado para Long
         return livroRepository.findById(id)
                 .map(livro -> {
                     livro.setAutorLivro(livroAtualizado.getAutorLivro());
                     livro.setDataLancamento(livroAtualizado.getDataLancamento());
                     livro.setEditora(livroAtualizado.getEditora());
                     livro.setCodBarras(livroAtualizado.getCodBarras());
-                    livro.setEmprestado(livroAtualizado.isEmprestado());
+                    livro.setDisponivel(livroAtualizado.isDisponivel());
                     livro.setPrecoLivro(livroAtualizado.getPrecoLivro());
                     return livroRepository.save(livro);
                 }).orElseThrow(() -> new RuntimeException("Livro não encontrado com ID: " + id));
     }
 
-    public void deletarLivro(int id) {
-        livroRepository.deleteById(id);
+    public void deletarLivro(Long id) { // Alterado para Long
+        Livro livro = livroRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Livro não encontrado com ID: " + id)); 
+        livroRepository.delete(livro); 
     }
 }
