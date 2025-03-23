@@ -16,8 +16,11 @@ import jakarta.persistence.Table;
 public class Livro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idLivro; // Alterado para Long
+    private Long idLivro;
 
+    @Column(nullable = false)
+    private String nomeLivro;
+    
     @Column(nullable = false)
     private String autorLivro;
 
@@ -40,8 +43,9 @@ public class Livro {
     }
 
     // Construtor com parâmetros
-    public Livro(Long idLivro, String autorLivro, LocalDate dataLancamento, String editora, String codBarras, boolean disponivel, double precoLivro) {
+    public Livro(Long idLivro, String nomeLivro, String autorLivro, LocalDate dataLancamento, String editora, String codBarras, boolean disponivel, double precoLivro) {
         this.idLivro = idLivro;
+        this.nomeLivro = nomeLivro;
         this.autorLivro = autorLivro;
         this.dataLancamento = dataLancamento;
         this.editora = editora;
@@ -57,6 +61,13 @@ public class Livro {
 
     public void setIdLivro(Long idLivro) {
         this.idLivro = idLivro;
+    }
+    public String getNomeLivro() {
+        return nomeLivro;
+    }
+
+    public void setNomeLivro(String nomeLivro) {
+        this.nomeLivro = nomeLivro;
     }
 
     public String getAutorLivro() {

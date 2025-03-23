@@ -29,6 +29,7 @@ public class LivroService {
     public Livro atualizarLivro(Long id, Livro livroAtualizado) { // Alterado para Long
         return livroRepository.findById(id)
                 .map(livro -> {
+                    livro.setNomeLivro(livroAtualizado.getNomeLivro());
                     livro.setAutorLivro(livroAtualizado.getAutorLivro());
                     livro.setDataLancamento(livroAtualizado.getDataLancamento());
                     livro.setEditora(livroAtualizado.getEditora());
