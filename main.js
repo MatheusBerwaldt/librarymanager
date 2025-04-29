@@ -1,26 +1,45 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-const axios = require('axios');
+const { app, BrowserWindow } = require("electron");
+const path = require("path");
 
 let mainWindow;
 
-app.whenReady().then(() => {
-    mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false
-        }
-    });
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
 
-    mainWindow.loadFile('index.html');
+  // Desabilita o sandbox para desenvolvimento
+  app.commandLine.appendSwitch("no-sandbox");
+  app.commandLine.appendSwitch("disable-gpu");
+
+  // Carrega o arquivo HTML local
+  mainWindow.loadFile("index.html");
+
+  // Abre o DevTools em desenvolvimento
+  mainWindow.webContents.openDevTools();
+
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
+}
+
+app.whenReady().then(() => {
+  createWindow();
+
+  app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
 });
 
-ipcMain.handle('fetch-data', async () => {
-    try {
-        const response = await axios.get('http://localhost:8080/api/hello');
-        return response.data;
-    } catch (error) {
-        return 'Erro ao buscar dados do backend';
-    }
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
 });

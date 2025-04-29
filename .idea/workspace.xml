@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="98adf18d-675c-4691-9af8-8958c6d513c2" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/librarymanager.db" beforeDir="false" afterPath="$PROJECT_DIR$/librarymanager.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/checksums.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/checksums.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/chrome_crashpad_handler" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/chrome_crashpad_handler" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/icudtl.dat" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/icudtl.dat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/libEGL.so" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/libEGL.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/libGLESv2.so" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/libGLESv2.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/libffmpeg.so" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/libffmpeg.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/libvk_swiftshader.so" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/libvk_swiftshader.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/libvulkan.so.1" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/libvulkan.so.1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/ca.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/ca.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/de.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/de.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/el.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/el.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/en-GB.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/en-GB.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/es-419.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/es-419.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/es.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/es.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/et.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/et.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/fa.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/fa.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/fr.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/fr.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/hi.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/hi.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/hr.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/hr.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/it.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/it.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/ja.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/ja.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/lv.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/lv.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/nl.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/nl.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/pl.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/pl.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/pt-BR.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/pt-BR.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/pt-PT.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/pt-PT.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/ru.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/ru.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/sk.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/sk.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/sv.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/sv.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/th.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/th.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/locales/zh-CN.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/locales/zh-CN.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/resources.pak" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/resources.pak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/snapshot_blob.bin" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/snapshot_blob.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/v8_context_snapshot.bin" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/v8_context_snapshot.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/dist/version" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/dist/version" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/electron.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/electron.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/librarymanager/controller/LivroController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/librarymanager/controller/LivroController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/librarymanager/model/Livro.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/librarymanager/model/Livro.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/LibrarymanagerApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/LibrarymanagerApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/controller/EmprestimoController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/controller/EmprestimoController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/controller/LivroController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/controller/LivroController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/controller/SocioController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/controller/SocioController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/model/Compra.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/model/Compra.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/model/Emprestimo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/model/Emprestimo.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/model/Livro.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/model/Livro.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/model/Socio.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/model/Socio.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/repository/EmprestimoRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/repository/EmprestimoRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/repository/LivroRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/repository/LivroRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/repository/SocioRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/repository/SocioRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/service/EmprestimoService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/service/EmprestimoService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/service/LivroService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/service/LivroService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/librarymanager/service/SocioService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/librarymanager/service/SocioService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/librarymanager-0.0.1-SNAPSHOT.jar.original" beforeDir="false" afterPath="$PROJECT_DIR$/target/librarymanager-0.0.1-SNAPSHOT.jar.original" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.librarymanager.LibrarymanagerApplicationTests.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-com.librarymanager.LibrarymanagerApplicationTests.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.librarymanager.LibrarymanagerApplicationTests.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/com.librarymanager.LibrarymanagerApplicationTests.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/librarymanager/LibrarymanagerApplicationTests.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/com/librarymanager/LibrarymanagerApplicationTests.class" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2v94YnJZC62Iu1fzKZPpRIXeJ37" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="98adf18d-675c-4691-9af8-8958c6d513c2" name="Changes" comment="" />
+      <created>1743544005616</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1743544005616</updated>
+    </task>
+    <servers />
+  </component>
+</project>

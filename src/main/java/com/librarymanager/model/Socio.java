@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class Socio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idSocio;
+    private Long idSocio;
 
     private String nome;
     private LocalDate dataIngresso;

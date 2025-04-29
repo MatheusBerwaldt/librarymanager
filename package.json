@@ -1,16 +1,17 @@
 {
-    "name": "electron-app",
-    "version": "1.0.0",
-    "main": "main.js",
-    "scripts": {
-        "start": "electron ."
-    },
-    "dependencies": {
-        "axios": "^1.5.0",
-        "es-object-atoms": "^1.1.1"
-    },
-    "devDependencies": {
-        "@ljharb/tsconfig": "^0.3.2",
-        "electron": "^35.0.3"
-    }
+  "name": "library-manager",
+  "version": "1.0.0",
+  "description": "Sistema de Gerenciamento de Biblioteca",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "start:dev": "ELECTRON_ENABLE_LOGGING=true electron .",
+    "start:abs": "electron $(pwd)"
+  },
+  "dependencies": {
+    "axios": "^1.6.7"
+  },
+  "devDependencies": {
+    "electron": "^29.1.0"
+  }
 }

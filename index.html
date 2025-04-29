@@ -1,22 +1,65 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electron Frontend</title>
-</head>
-<body>
-    <h1>Frontend Electron</h1>
-    <button id="fetchBtn">Buscar Dados</button>
-    <p id="response"></p>
-
-    <script>
-        const { ipcRenderer } = require('electron');
-
-        document.getElementById('fetchBtn').addEventListener('click', async () => {
-            const data = await ipcRenderer.invoke('fetch-data');
-            document.getElementById('response').innerText = data;
-        });
-    </script>
-</body>
+<html>
+  <head>
+    <title>Gerenciador de Biblioteca</title>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .menu {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .content {
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Gerenciador de Biblioteca</h1>
+      </div>
+      <div class="menu">
+        <button onclick="showSection('socios')">Sócios</button>
+        <button onclick="showSection('livros')">Livros</button>
+        <button onclick="showSection('emprestimos')">Empréstimos</button>
+      </div>
+      <div class="content" id="mainContent">
+        <h2>Bem-vindo ao Gerenciador de Biblioteca</h2>
+        <p>Selecione uma opção no menu acima para começar.</p>
+      </div>
+    </div>
+    <script src="renderer.js"></script>
+  </body>
 </html>

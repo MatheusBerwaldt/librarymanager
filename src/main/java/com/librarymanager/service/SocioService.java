@@ -17,7 +17,7 @@ public class SocioService {
         return socioRepository.findAll();
     }
 
-    public Optional<Socio> getSocioById(int id) {
+    public Optional<Socio> getSocioById(Long id) {
         return socioRepository.findById(id);
     }
 
@@ -25,7 +25,21 @@ public class SocioService {
         return socioRepository.save(socio);
     }
 
-    public void deleteSocio(int id) {
-        socioRepository.deleteById(id);
+    public Socio atualizarSocio(Long id, Socio socioAtualizado) {
+        return socioRepository.findById(id)
+                .map(socio -> {
+                    socio.setNome(socioAtualizado.getNome());
+                    socio.setDataIngresso(socioAtualizado.getDataIngresso());
+                    socio.setDataNascimento(socioAtualizado.getDataNascimento());
+                    socio.setProfissao(socioAtualizado.getProfissao());
+                    socio.setTelefone(socioAtualizado.getTelefone());
+                    return socioRepository.save(socio);
+                }).orElseThrow(() -> new RuntimeException("Sócio não encontrado com ID: " + id));
+    }
+
+    public void deleteSocio(Long id) {
+        Socio socio = socioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sócio não encontrado com ID: " + id));
+        socioRepository.delete(socio);
     }
 }
