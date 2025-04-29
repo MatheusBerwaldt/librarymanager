@@ -1,5 +1,6 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
+const db = require("./src/database");
 
 // Desabilita o sandbox para desenvolvimento
 app.commandLine.appendSwitch("no-sandbox");
@@ -37,4 +38,9 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+// Limpa a conexão com o banco de dados quando a aplicação é fechada
+app.on("before-quit", () => {
+  db.close();
 });

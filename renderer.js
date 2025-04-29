@@ -53,19 +53,25 @@ function showTab(tab) {
 // LIVROS
 function renderLivros() {
   const content = document.getElementById("livrosList");
-  let html = `<table><thead><tr><th>Título</th><th>Autor</th><th>ISBN</th><th>Status</th><th class='actions'>Ações</th></tr></thead><tbody>`;
+  let html = `<table><thead><tr><th>Nome</th><th>Autor</th><th>Data Lançamento</th><th>Editora</th><th>Cód. Barras</th><th>Preço</th><th>Disponível</th><th>Sócio Emprestado</th><th class='actions'>Ações</th></tr></thead><tbody>`;
   for (const livro of livros) {
     html += `<tr>
-            <td>${livro.titulo}</td>
-            <td>${livro.autor}</td>
-            <td>${livro.isbn}</td>
-            <td>${livro.disponivel ? "Disponível" : "Emprestado"}</td>
+            <td>${livro.nomeLivro}</td>
+            <td>${livro.autorLivro}</td>
+            <td>${livro.dataLancamento || ""}</td>
+            <td>${livro.editora || ""}</td>
+            <td>${livro.codBarras || ""}</td>
+            <td>${
+              livro.precoLivro != null ? livro.precoLivro.toFixed(2) : ""
+            }</td>
+            <td>${livro.disponivel ? "Sim" : "Não"}</td>
+            <td>${livro.socioEmprestado ? livro.socioEmprestado.nome : ""}</td>
             <td class='actions'>
                 <button class='btn' onclick='editLivro(${
-                  livro.id
+                  livro.idLivro
                 })'>Editar</button>
                 <button class='btn delete' onclick='deleteLivro(${
-                  livro.id
+                  livro.idLivro
                 })'>Excluir</button>
             </td>
         </tr>`;
@@ -76,10 +82,18 @@ function renderLivros() {
 
 function showLivroForm(id = null) {
   const content = document.getElementById("mainContent");
-  let livro = { titulo: "", autor: "", isbn: "" };
+  let livro = {
+    nomeLivro: "",
+    autorLivro: "",
+    dataLancamento: "",
+    editora: "",
+    codBarras: "",
+    precoLivro: "",
+    disponivel: true,
+  };
   let editando = false;
   if (id !== null) {
-    livro = livros.find((l) => l.id === id);
+    livro = livros.find((l) => l.idLivro === id);
     editando = true;
     livroEditando = id;
   } else {
@@ -87,64 +101,91 @@ function showLivroForm(id = null) {
   }
   content.innerHTML = `
         <h2>${editando ? "Editar" : "Cadastrar"} Livro</h2>
-        <form onsubmit="salvarLivro(event)">
-            <div class="form-group"><label>Título</label><input name="titulo" value="${
-              livro.titulo
+        <form onsubmit="saveLivro(event)">
+            <div class="form-group"><label>Nome do Livro</label><input name="nomeLivro" value="${
+              livro.nomeLivro || ""
             }" required></div>
-            <div class="form-group"><label>Autor</label><input name="autor" value="${
-              livro.autor
+            <div class="form-group"><label>Autor</label><input name="autorLivro" value="${
+              livro.autorLivro || ""
             }" required></div>
-            <div class="form-group"><label>ISBN</label><input name="isbn" value="${
-              livro.isbn
+            <div class="form-group"><label>Data de Lançamento</label><input type="date" name="dataLancamento" value="${
+              livro.dataLancamento ? livro.dataLancamento : ""
             }" required></div>
+            <div class="form-group"><label>Editora</label><input name="editora" value="${
+              livro.editora || ""
+            }"></div>
+            <div class="form-group"><label>Código de Barras</label><input name="codBarras" value="${
+              livro.codBarras || ""
+            }"></div>
+            <div class="form-group"><label>Preço</label><input type="number" name="precoLivro" step="0.01" value="${
+              livro.precoLivro || ""
+            }" required></div>
+            <div class="form-group"><label>Disponível</label><input type="checkbox" name="disponivel" ${
+              livro.disponivel ? "checked" : ""
+            }></div>
             <button class="btn" type="submit">Salvar</button>
             <button class="btn cancel" type="button" onclick="renderLivros()">Cancelar</button>
         </form>
     `;
 }
 
-function salvarLivro(e) {
-  e.preventDefault();
-  const form = e.target;
-  const novo = {
-    titulo: form.titulo.value,
-    autor: form.autor.value,
-    isbn: form.isbn.value,
+async function saveLivro(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const livroData = {
+    nomeLivro: formData.get("nomeLivro"),
+    autorLivro: formData.get("autorLivro"),
+    dataLancamento: formData.get("dataLancamento"),
+    editora: formData.get("editora"),
+    codBarras: formData.get("codBarras"),
+    precoLivro: parseFloat(formData.get("precoLivro")),
+    disponivel: formData.get("disponivel") === "on",
   };
-  if (livroEditando !== null) {
-    const idx = livros.findIndex((l) => l.id === livroEditando);
-    livros[idx] = { ...livros[idx], ...novo };
-  } else {
-    livros.push({ id: Date.now(), ...novo, disponivel: true });
+  try {
+    if (livroEditando) {
+      await axios.put(`${API_URL}/livros/${livroEditando}`, livroData);
+    } else {
+      await axios.post(`${API_URL}/livros`, livroData);
+    }
+    showTab("livros");
+    await fetchAllData();
+  } catch (error) {
+    alert("Erro ao salvar livro. Verifique se o servidor está rodando.");
   }
-  livroEditando = null;
-  renderLivros();
 }
 
 function editLivro(id) {
   showLivroForm(id);
 }
-function deleteLivro(id) {
-  if (emprestimos.some((e) => e.livroId === id && !e.devolvido)) {
-    alert("Não é possível excluir: livro emprestado!");
-    return;
+
+async function deleteLivro(id) {
+  if (!confirm("Tem certeza que deseja excluir este livro?")) return;
+  try {
+    await axios.delete(`${API_URL}/livros/${id}`);
+    await fetchAllData();
+  } catch (error) {
+    alert("Erro ao excluir livro. Verifique se o servidor está rodando.");
   }
-  livros = livros.filter((l) => l.id !== id);
-  renderLivros();
 }
 
 // SOCIOS
 function renderSocios() {
   const content = document.getElementById("sociosList");
-  let html = `<table><thead><tr><th>Nome</th><th>Email</th><th>Telefone</th><th class='actions'>Ações</th></tr></thead><tbody>`;
+  let html = `<table><thead><tr><th>Nome</th><th>Data Ingresso</th><th>Data Nascimento</th><th>Profissão</th><th>Telefone</th><th class='actions'>Ações</th></tr></thead><tbody>`;
   for (const socio of socios) {
     html += `<tr>
             <td>${socio.nome}</td>
-            <td>${socio.email}</td>
-            <td>${socio.telefone}</td>
+            <td>${socio.dataIngresso || ""}</td>
+            <td>${socio.dataNascimento || ""}</td>
+            <td>${socio.profissao || ""}</td>
+            <td>${socio.telefone || ""}</td>
             <td class='actions'>
-                <button class='btn' onclick='editSocio(${socio.id})'>Editar</button>
-                <button class='btn delete' onclick='deleteSocio(${socio.id})'>Excluir</button>
+                <button class='btn' onclick='editSocio(${
+                  socio.idSocio
+                })'>Editar</button>
+                <button class='btn delete' onclick='deleteSocio(${
+                  socio.idSocio
+                })'>Excluir</button>
             </td>
         </tr>`;
   }
@@ -154,10 +195,16 @@ function renderSocios() {
 
 function showSocioForm(id = null) {
   const content = document.getElementById("mainContent");
-  let socio = { nome: "", email: "", telefone: "" };
+  let socio = {
+    nome: "",
+    dataIngresso: "",
+    dataNascimento: "",
+    profissao: "",
+    telefone: "",
+  };
   let editando = false;
   if (id !== null) {
-    socio = socios.find((s) => s.id === id);
+    socio = socios.find((s) => s.idSocio === id);
     editando = true;
     socioEditando = id;
   } else {
@@ -165,71 +212,84 @@ function showSocioForm(id = null) {
   }
   content.innerHTML = `
         <h2>${editando ? "Editar" : "Cadastrar"} Sócio</h2>
-        <form onsubmit="salvarSocio(event)">
+        <form onsubmit="saveSocio(event)">
             <div class="form-group"><label>Nome</label><input name="nome" value="${
-              socio.nome
+              socio.nome || ""
             }" required></div>
-            <div class="form-group"><label>Email</label><input name="email" value="${
-              socio.email
-            }" required></div>
+            <div class="form-group"><label>Data de Ingresso</label><input type="date" name="dataIngresso" value="${
+              socio.dataIngresso || ""
+            }"></div>
+            <div class="form-group"><label>Data de Nascimento</label><input type="date" name="dataNascimento" value="${
+              socio.dataNascimento || ""
+            }"></div>
+            <div class="form-group"><label>Profissão</label><input name="profissao" value="${
+              socio.profissao || ""
+            }"></div>
             <div class="form-group"><label>Telefone</label><input name="telefone" value="${
-              socio.telefone
-            }" required></div>
+              socio.telefone || ""
+            }"></div>
             <button class="btn" type="submit">Salvar</button>
             <button class="btn cancel" type="button" onclick="renderSocios()">Cancelar</button>
         </form>
     `;
 }
 
-function salvarSocio(e) {
-  e.preventDefault();
-  const form = e.target;
-  const novo = {
-    nome: form.nome.value,
-    email: form.email.value,
-    telefone: form.telefone.value,
+async function saveSocio(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const socioData = {
+    nome: formData.get("nome"),
+    dataIngresso: formData.get("dataIngresso"),
+    dataNascimento: formData.get("dataNascimento"),
+    profissao: formData.get("profissao"),
+    telefone: formData.get("telefone"),
   };
-  if (socioEditando !== null) {
-    const idx = socios.findIndex((s) => s.id === socioEditando);
-    socios[idx] = { ...socios[idx], ...novo };
-  } else {
-    socios.push({ id: Date.now(), ...novo });
+  try {
+    if (socioEditando) {
+      await axios.put(`${API_URL}/socios/${socioEditando}`, socioData);
+    } else {
+      await axios.post(`${API_URL}/socios`, socioData);
+    }
+    showTab("socios");
+    await fetchAllData();
+  } catch (error) {
+    alert("Erro ao salvar sócio. Verifique se o servidor está rodando.");
   }
-  socioEditando = null;
-  renderSocios();
 }
 
 function editSocio(id) {
   showSocioForm(id);
 }
-function deleteSocio(id) {
-  if (emprestimos.some((e) => e.socioId === id && !e.devolvido)) {
-    alert("Não é possível excluir: sócio com empréstimo ativo!");
-    return;
+
+async function deleteSocio(id) {
+  if (!confirm("Tem certeza que deseja excluir este sócio?")) return;
+  try {
+    await axios.delete(`${API_URL}/socios/${id}`);
+    await fetchAllData();
+  } catch (error) {
+    alert("Erro ao excluir sócio. Verifique se o servidor está rodando.");
   }
-  socios = socios.filter((s) => s.id !== id);
-  renderSocios();
 }
 
 // EMPRESTIMOS
 function renderEmprestimos() {
   const content = document.getElementById("emprestimosList");
-  let html = `<table><thead><tr><th>Livro</th><th>Sócio</th><th>Data Empréstimo</th><th>Data Devolução</th><th>Status</th><th class='actions'>Ações</th></tr></thead><tbody>`;
+  let html = `<table><thead><tr><th>Sócio</th><th>Livros</th><th>Data Empréstimo</th><th>Data Devolução Prevista</th><th>Data Devolução Real</th><th class='actions'>Ações</th></tr></thead><tbody>`;
   for (const emp of emprestimos) {
-    const livro = livros.find((l) => l.id === emp.livroId);
-    const socio = socios.find((s) => s.id === emp.socioId);
     html += `<tr>
-            <td>${livro ? livro.titulo : "-"}</td>
-            <td>${socio ? socio.nome : "-"}</td>
-            <td>${emp.dataEmprestimo}</td>
-            <td>${emp.devolvido ? emp.dataDevolucao : "-"}</td>
-            <td>${emp.devolvido ? "Devolvido" : "Em andamento"}</td>
+            <td>${emp.socio ? emp.socio.nome : ""}</td>
+            <td>${
+              emp.livros && emp.livros.length > 0
+                ? emp.livros.map((l) => l.nomeLivro).join(", ")
+                : ""
+            }</td>
+            <td>${emp.dataEmprestimo || ""}</td>
+            <td>${emp.dataDevolucaoPrevista || ""}</td>
+            <td>${emp.dataDevolucaoReal || ""}</td>
             <td class='actions'>
-                ${
-                  emp.devolvido
-                    ? ""
-                    : `<button class='btn devolver' onclick='devolverEmprestimo(${emp.id})'>Devolver</button>`
-                }
+                <button class='btn' onclick='editEmprestimo(${
+                  emp.id
+                })'>Editar</button>
                 <button class='btn delete' onclick='deleteEmprestimo(${
                   emp.id
                 })'>Excluir</button>
@@ -242,7 +302,7 @@ function renderEmprestimos() {
 
 function showEmprestimoForm(id = null) {
   const content = document.getElementById("mainContent");
-  let emp = { livroId: "", socioId: "" };
+  let emp = { socio: null, livros: [], dataDevolucaoPrevista: "" };
   let editando = false;
   if (id !== null) {
     emp = emprestimos.find((e) => e.id === id);
@@ -251,81 +311,72 @@ function showEmprestimoForm(id = null) {
   } else {
     emprestimoEditando = null;
   }
-  let livrosDisponiveis = livros.filter(
-    (l) => l.disponivel || (editando && l.id === emp.livroId)
-  );
   let sociosDisponiveis = socios;
+  let livrosDisponiveis = livros.filter(
+    (l) =>
+      l.disponivel ||
+      (editando && emp.livros.some((lv) => lv.idLivro === l.idLivro))
+  );
   content.innerHTML = `
         <h2>${editando ? "Editar" : "Novo"} Empréstimo</h2>
-        <form onsubmit="salvarEmprestimo(event)">
-            <div class="form-group"><label>Livro</label>
-                <select name="livroId" required>
-                    <option value="">Selecione</option>
-                    ${livrosDisponiveis
-                      .map(
-                        (l) =>
-                          `<option value="${l.id}" ${
-                            l.id === emp.livroId ? "selected" : ""
-                          }>${l.titulo}</option>`
-                      )
-                      .join("")}
-                </select>
-            </div>
+        <form onsubmit="saveEmprestimo(event)">
             <div class="form-group"><label>Sócio</label>
-                <select name="socioId" required>
+                <select name="idSocio" required>
                     <option value="">Selecione</option>
                     ${sociosDisponiveis
                       .map(
                         (s) =>
-                          `<option value="${s.id}" ${
-                            s.id === emp.socioId ? "selected" : ""
+                          `<option value="${s.idSocio}" ${
+                            emp.socio && s.idSocio === emp.socio.idSocio
+                              ? "selected"
+                              : ""
                           }>${s.nome}</option>`
                       )
                       .join("")}
                 </select>
             </div>
+            <div class="form-group"><label>Livros</label>
+                <select name="idLivros" multiple required>
+                    ${livrosDisponiveis
+                      .map(
+                        (l) =>
+                          `<option value="${l.idLivro}" ${
+                            emp.livros &&
+                            emp.livros.some((lv) => lv.idLivro === l.idLivro)
+                              ? "selected"
+                              : ""
+                          }>${l.nomeLivro}</option>`
+                      )
+                      .join("")}
+                </select>
+                <small>Segure Ctrl para selecionar mais de um livro</small>
+            </div>
+            <div class="form-group"><label>Data Devolução Prevista</label><input type="date" name="dataDevolucaoPrevista" value="${
+              emp.dataDevolucaoPrevista || ""
+            }" required></div>
             <button class="btn" type="submit">Salvar</button>
             <button class="btn cancel" type="button" onclick="renderEmprestimos()">Cancelar</button>
         </form>
     `;
 }
 
-function salvarEmprestimo(e) {
-  e.preventDefault();
-  const form = e.target;
-  const livroId = Number(form.livroId.value);
-  const socioId = Number(form.socioId.value);
-  if (!livroId || !socioId) return;
-  if (emprestimoEditando !== null) {
-    // Não implementado edição de empréstimo
-  } else {
-    const livro = livros.find((l) => l.id === livroId);
-    if (!livro.disponivel) {
-      alert("Livro não disponível!");
-      return;
-    }
-    livro.disponivel = false;
-    emprestimos.push({
-      id: Date.now(),
-      livroId,
-      socioId,
-      dataEmprestimo: new Date().toLocaleDateString(),
-      devolvido: false,
-      dataDevolucao: null,
+async function saveEmprestimo(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const idSocio = formData.get("idSocio");
+  const idLivros = formData.getAll("idLivros");
+  const dataDevolucaoPrevista = formData.get("dataDevolucaoPrevista");
+  try {
+    await axios.post(`${API_URL}/emprestimos`, {
+      socio: { idSocio: Number(idSocio) },
+      livros: idLivros.map((id) => ({ idLivro: Number(id) })),
+      dataDevolucaoPrevista,
     });
+    showTab("emprestimos");
+    await fetchAllData();
+  } catch (error) {
+    alert("Erro ao salvar empréstimo. Verifique se o servidor está rodando.");
   }
-  emprestimoEditando = null;
-  renderEmprestimos();
-}
-
-function devolverEmprestimo(id) {
-  const emp = emprestimos.find((e) => e.id === id);
-  if (!emp || emp.devolvido) return;
-  emp.devolvido = true;
-  emp.dataDevolucao = new Date().toLocaleDateString();
-  const livro = livros.find((l) => l.id === emp.livroId);
-  if (livro) livro.disponivel = true;
-  renderEmprestimos();
 }
 
 function deleteEmprestimo(id) {
@@ -354,8 +405,20 @@ function showForm(type) {
                             <input type="text" name="nome" required>
                         </div>
                         <div class="form-group">
-                            <label>Email:</label>
-                            <input type="email" name="email" required>
+                            <label>Data de Ingresso:</label>
+                            <input type="date" name="dataIngresso" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Data de Nascimento:</label>
+                            <input type="date" name="dataNascimento" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Profissão:</label>
+                            <input type="text" name="profissao">
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone:</label>
+                            <input type="text" name="telefone">
                         </div>
                         <button type="submit" class="btn">Salvar</button>
                         <button type="button" class="btn" onclick="showTab('socios')">Cancelar</button>
@@ -370,12 +433,32 @@ function showForm(type) {
                     <h3>Adicionar Livro</h3>
                     <form onsubmit="saveLivro(event)">
                         <div class="form-group">
-                            <label>Título:</label>
-                            <input type="text" name="titulo" required>
+                            <label>Nome do Livro:</label>
+                            <input type="text" name="nomeLivro" required>
                         </div>
                         <div class="form-group">
                             <label>Autor:</label>
-                            <input type="text" name="autor" required>
+                            <input type="text" name="autorLivro" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Data de Lançamento:</label>
+                            <input type="date" name="dataLancamento" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Editora:</label>
+                            <input type="text" name="editora">
+                        </div>
+                        <div class="form-group">
+                            <label>Código de Barras:</label>
+                            <input type="text" name="codBarras">
+                        </div>
+                        <div class="form-group">
+                            <label>Preço:</label>
+                            <input type="number" name="precoLivro" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Disponível:</label>
+                            <input type="checkbox" name="disponivel" checked>
                         </div>
                         <button type="submit" class="btn">Salvar</button>
                         <button type="button" class="btn" onclick="showTab('livros')">Cancelar</button>
@@ -390,12 +473,16 @@ function showForm(type) {
                     <h3>Novo Empréstimo</h3>
                     <form onsubmit="saveEmprestimo(event)">
                         <div class="form-group">
-                            <label>Livro:</label>
-                            <select name="livroId" required></select>
+                            <label>Sócio:</label>
+                            <select name="idSocio" required></select>
                         </div>
                         <div class="form-group">
-                            <label>Sócio:</label>
-                            <select name="socioId" required></select>
+                            <label>Livros:</label>
+                            <select name="idLivros" multiple required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Data Devolução Prevista:</label>
+                            <input type="date" name="dataDevolucaoPrevista" required>
                         </div>
                         <button type="submit" class="btn">Salvar</button>
                         <button type="button" class="btn" onclick="showTab('emprestimos')">Cancelar</button>
@@ -412,52 +499,6 @@ function showForm(type) {
   }
 }
 
-// Funções para salvar dados
-async function saveSocio(event) {
-  event.preventDefault();
-  const formData = new FormData(event.target);
-  try {
-    await axios.post(`${API_URL}/socios`, {
-      nome: formData.get("nome"),
-      email: formData.get("email"),
-    });
-    showTab("socios");
-  } catch (error) {
-    console.error("Erro ao salvar sócio:", error);
-    alert("Erro ao salvar sócio. Verifique se o servidor está rodando.");
-  }
-}
-
-async function saveLivro(event) {
-  event.preventDefault();
-  const formData = new FormData(event.target);
-  try {
-    await axios.post(`${API_URL}/livros`, {
-      titulo: formData.get("titulo"),
-      autor: formData.get("autor"),
-    });
-    showTab("livros");
-  } catch (error) {
-    console.error("Erro ao salvar livro:", error);
-    alert("Erro ao salvar livro. Verifique se o servidor está rodando.");
-  }
-}
-
-async function saveEmprestimo(event) {
-  event.preventDefault();
-  const formData = new FormData(event.target);
-  try {
-    await axios.post(`${API_URL}/emprestimos`, {
-      livroId: formData.get("livroId"),
-      socioId: formData.get("socioId"),
-    });
-    showTab("emprestimos");
-  } catch (error) {
-    console.error("Erro ao salvar empréstimo:", error);
-    alert("Erro ao salvar empréstimo. Verifique se o servidor está rodando.");
-  }
-}
-
 // Função para carregar opções dos selects
 async function loadSelectOptions() {
   try {
@@ -466,8 +507,8 @@ async function loadSelectOptions() {
       axios.get(`${API_URL}/socios`),
     ]);
 
-    const livroSelect = document.querySelector('select[name="livroId"]');
-    const socioSelect = document.querySelector('select[name="socioId"]');
+    const livroSelect = document.querySelector('select[name="idLivros"]');
+    const socioSelect = document.querySelector('select[name="idSocio"]');
 
     livroSelect.innerHTML = `
             <option value="">Selecione um livro</option>
@@ -475,7 +516,7 @@ async function loadSelectOptions() {
               .filter((livro) => livro.disponivel)
               .map(
                 (livro) =>
-                  `<option value="${livro.id}">${livro.titulo}</option>`
+                  `<option value="${livro.idLivro}">${livro.nomeLivro}</option>`
               )
               .join("")}
         `;
@@ -484,7 +525,8 @@ async function loadSelectOptions() {
             <option value="">Selecione um sócio</option>
             ${sociosResponse.data
               .map(
-                (socio) => `<option value="${socio.id}">${socio.nome}</option>`
+                (socio) =>
+                  `<option value="${socio.idSocio}">${socio.nome}</option>`
               )
               .join("")}
         `;
@@ -494,22 +536,38 @@ async function loadSelectOptions() {
   }
 }
 
-// Inicializa a primeira aba
+// Funções para buscar dados do backend e atualizar as listas
+async function fetchAllData() {
+  try {
+    const [livrosRes, sociosRes, emprestimosRes] = await Promise.all([
+      axios.get(`${API_URL}/livros`),
+      axios.get(`${API_URL}/socios`),
+      axios.get(`${API_URL}/emprestimos`),
+    ]);
+    livros = livrosRes.data;
+    socios = sociosRes.data;
+    emprestimos = emprestimosRes.data;
+    renderLivros();
+    renderSocios();
+    renderEmprestimos();
+  } catch (error) {
+    console.error("Erro ao buscar dados do backend:", error);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  fetchAllData();
   showTab("livros");
 });
 
 // Expondo funções para o escopo global
 globalThis.showTab = showTab;
 globalThis.showLivroForm = showLivroForm;
-globalThis.salvarLivro = salvarLivro;
 globalThis.editLivro = editLivro;
 globalThis.deleteLivro = deleteLivro;
 globalThis.showSocioForm = showSocioForm;
-globalThis.salvarSocio = salvarSocio;
 globalThis.editSocio = editSocio;
 globalThis.deleteSocio = deleteSocio;
 globalThis.showEmprestimoForm = showEmprestimoForm;
-globalThis.salvarEmprestimo = salvarEmprestimo;
-globalThis.devolverEmprestimo = devolverEmprestimo;
+globalThis.devolverEmprestimo = deleteEmprestimo;
 globalThis.deleteEmprestimo = deleteEmprestimo;

@@ -1,5 +1,6 @@
-// Importação do módulo ipcRenderer do Electron
+// Importação do módulo ipcRenderer do Electron e do módulo de banco de dados
 const { ipcRenderer } = require("electron");
+const db = require("./src/database");
 
 // Configuração da API
 const API_URL = "http://localhost:8080/api";
@@ -37,82 +38,103 @@ class Emprestimo {
 // Gerenciador de Biblioteca
 class GerenciadorBiblioteca {
   constructor() {
-    this.membros = JSON.parse(localStorage.getItem("membros")) || [];
-    this.livros = JSON.parse(localStorage.getItem("livros")) || [];
-    this.emprestimos = JSON.parse(localStorage.getItem("emprestimos")) || [];
-    this.proximoIdMembro =
-      parseInt(localStorage.getItem("proximoIdMembro")) || 1;
-    this.proximoIdLivro = parseInt(localStorage.getItem("proximoIdLivro")) || 1;
-    this.proximoIdEmprestimo =
-      parseInt(localStorage.getItem("proximoIdEmprestimo")) || 1;
+    this.carregarDados();
+  }
+
+  async carregarDados() {
+    try {
+      this.membros = await db.buscarMembros();
+      this.livros = await db.buscarLivros();
+      this.emprestimos = await db.buscarEmprestimos();
+      this.atualizarDashboard();
+    } catch (error) {
+      console.error("Erro ao carregar dados:", error);
+    }
   }
 
   // Métodos para Membros
-  adicionarMembro(nome, email, telefone) {
-    const membro = new Membro(this.proximoIdMembro++, nome, email, telefone);
-    this.membros.push(membro);
-    this.salvarDados();
-    return membro;
+  async adicionarMembro(nome, email, telefone) {
+    try {
+      const membro = await db.adicionarMembro(nome, email, telefone);
+      await this.carregarDados();
+      return membro;
+    } catch (error) {
+      console.error("Erro ao adicionar membro:", error);
+      throw error;
+    }
   }
 
-  removerMembro(id) {
-    this.membros = this.membros.filter((m) => m.id !== id);
-    this.salvarDados();
+  async removerMembro(id) {
+    try {
+      await db.removerMembro(id);
+      await this.carregarDados();
+    } catch (error) {
+      console.error("Erro ao remover membro:", error);
+      throw error;
+    }
   }
 
   // Métodos para Livros
-  adicionarLivro(titulo, autor, isbn) {
-    const livro = new Livro(this.proximoIdLivro++, titulo, autor, isbn);
-    this.livros.push(livro);
-    this.salvarDados();
-    return livro;
+  async adicionarLivro(titulo, autor, isbn) {
+    try {
+      const livro = await db.adicionarLivro(titulo, autor, isbn);
+      await this.carregarDados();
+      return livro;
+    } catch (error) {
+      console.error("Erro ao adicionar livro:", error);
+      throw error;
+    }
   }
 
-  removerLivro(id) {
-    this.livros = this.livros.filter((l) => l.id !== id);
-    this.salvarDados();
+  async removerLivro(id) {
+    try {
+      await db.removerLivro(id);
+      await this.carregarDados();
+    } catch (error) {
+      console.error("Erro ao remover livro:", error);
+      throw error;
+    }
   }
 
-  atualizarDisponibilidadeLivro(id, disponivel) {
-    const livro = this.livros.find((l) => l.id === id);
-    if (livro) {
-      livro.disponivel = disponivel;
-      this.salvarDados();
+  async atualizarDisponibilidadeLivro(id, disponivel) {
+    try {
+      const livro = this.livros.find((l) => l.id === id);
+      if (livro) {
+        await db.atualizarLivro(
+          livro.titulo,
+          livro.autor,
+          livro.isbn,
+          disponivel,
+          id
+        );
+        await this.carregarDados();
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar disponibilidade do livro:", error);
+      throw error;
     }
   }
 
   // Métodos para Empréstimos
-  realizarEmprestimo(membroId, livroId) {
-    const livro = this.livros.find((l) => l.id === livroId);
-    if (!livro || !livro.disponivel) {
-      throw new Error("Livro não está disponível para empréstimo");
+  async realizarEmprestimo(membroId, livroId) {
+    try {
+      const emprestimo = await db.realizarEmprestimo(membroId, livroId);
+      await this.carregarDados();
+      return emprestimo;
+    } catch (error) {
+      console.error("Erro ao realizar empréstimo:", error);
+      throw error;
     }
-
-    const emprestimo = new Emprestimo(
-      this.proximoIdEmprestimo++,
-      membroId,
-      livroId,
-      new Date()
-    );
-
-    livro.disponivel = false;
-    this.emprestimos.push(emprestimo);
-    this.salvarDados();
-    return emprestimo;
   }
 
-  devolverLivro(emprestimoId) {
-    const emprestimo = this.emprestimos.find((e) => e.id === emprestimoId);
-    if (emprestimo && !emprestimo.dataDevolucao) {
-      emprestimo.dataDevolucao = new Date();
-      const livro = this.livros.find((l) => l.id === emprestimo.livroId);
-      if (livro) {
-        livro.disponivel = true;
-      }
-      this.salvarDados();
-      return true;
+  async devolverLivro(emprestimoId) {
+    try {
+      await db.devolverLivro(emprestimoId);
+      await this.carregarDados();
+    } catch (error) {
+      console.error("Erro ao devolver livro:", error);
+      throw error;
     }
-    return false;
   }
 
   // Métodos auxiliares
@@ -283,71 +305,59 @@ async function carregarSocios() {
 
 async function cadastrarSocio(event) {
   event.preventDefault();
-
-  const socio = {
-    nome: document.getElementById("nomeSocio").value,
-    email: document.getElementById("emailSocio").value,
-    telefone: document.getElementById("telefoneSocio").value,
-  };
+  const nome = document.getElementById("nome").value;
+  const email = document.getElementById("email").value;
+  const telefone = document.getElementById("telefone").value;
 
   try {
-    await fetchAPI("/socios", {
-      method: "POST",
-      body: JSON.stringify(socio),
-    });
-
-    alert("Sócio cadastrado com sucesso!");
+    await db.adicionarMembro(nome, email, telefone);
     document.getElementById("formSocio").reset();
-    await carregarSocios();
+    mostrarTela("dashboard");
+    alert("Sócio cadastrado com sucesso!");
+    await biblioteca.carregarDados();
   } catch (error) {
-    alert("Erro ao cadastrar sócio");
+    console.error("Erro ao cadastrar sócio:", error);
+    alert("Erro ao cadastrar sócio: " + error.message);
   }
 }
 
 async function atualizarSocio(event) {
   event.preventDefault();
-
-  const id = document.getElementById("idSocio").value;
-  const socio = {
-    nome: document.getElementById("nomeSocio").value,
-    email: document.getElementById("emailSocio").value,
-    telefone: document.getElementById("telefoneSocio").value,
-  };
+  const id = document.getElementById("socioId").value;
+  const nome = document.getElementById("nome").value;
+  const email = document.getElementById("email").value;
+  const telefone = document.getElementById("telefone").value;
 
   try {
-    await fetchAPI(`/socios/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(socio),
-    });
-
-    alert("Sócio atualizado com sucesso!");
+    await db.atualizarMembro(id, nome, email, telefone);
     document.getElementById("formSocio").reset();
-    await carregarSocios();
+    mostrarTela("dashboard");
+    alert("Sócio atualizado com sucesso!");
+    await biblioteca.carregarDados();
   } catch (error) {
-    alert("Erro ao atualizar sócio");
+    console.error("Erro ao atualizar sócio:", error);
+    alert("Erro ao atualizar sócio: " + error.message);
   }
 }
 
 async function excluirSocio(id) {
-  if (!confirm("Tem certeza que deseja excluir este sócio?")) return;
-
-  try {
-    await fetchAPI(`/socios/${id}`, {
-      method: "DELETE",
-    });
-
-    alert("Sócio excluído com sucesso!");
-    await carregarSocios();
-  } catch (error) {
-    alert("Erro ao excluir sócio");
+  if (confirm("Tem certeza que deseja excluir este sócio?")) {
+    try {
+      await db.removerMembro(id);
+      alert("Sócio excluído com sucesso!");
+      await biblioteca.carregarDados();
+    } catch (error) {
+      console.error("Erro ao excluir sócio:", error);
+      alert("Erro ao excluir sócio: " + error.message);
+    }
   }
 }
 
 function editarSocio(socio) {
-  document.getElementById("idSocio").value = socio.idSocio;
-  document.getElementById("nomeSocio").value = socio.nome;
-  document.getElementById("emailSocio").value = socio.email;
-  document.getElementById("telefoneSocio").value = socio.telefone;
+  document.getElementById("socioId").value = socio.id;
+  document.getElementById("nome").value = socio.nome;
+  document.getElementById("email").value = socio.email;
+  document.getElementById("telefone").value = socio.telefone;
 }
 
 function atualizarTabelaSocios() {
@@ -366,9 +376,7 @@ function atualizarTabelaSocios() {
                 )})">
                     <i class="fas fa-edit"></i> Editar
                 </button>
-                <button class="btn-danger" onclick="excluirSocio(${
-                  socio.idSocio
-                })">
+                <button class="btn-danger" onclick="excluirSocio(${socio.id})">
                     <i class="fas fa-trash"></i> Excluir
                 </button>
             </td>
@@ -389,74 +397,61 @@ async function carregarLivros() {
 
 async function cadastrarLivro(event) {
   event.preventDefault();
-
-  const livro = {
-    titulo: document.getElementById("tituloLivro").value,
-    autor: document.getElementById("autorLivro").value,
-    isbn: document.getElementById("isbnLivro").value,
-    disponivel: true,
-  };
+  const titulo = document.getElementById("titulo").value;
+  const autor = document.getElementById("autor").value;
+  const isbn = document.getElementById("isbn").value;
 
   try {
-    await fetchAPI("/livros", {
-      method: "POST",
-      body: JSON.stringify(livro),
-    });
-
-    alert("Livro cadastrado com sucesso!");
+    await db.adicionarLivro(titulo, autor, isbn);
     document.getElementById("formLivro").reset();
-    await carregarLivros();
+    mostrarTela("dashboard");
+    alert("Livro cadastrado com sucesso!");
+    await biblioteca.carregarDados();
   } catch (error) {
-    alert("Erro ao cadastrar livro");
+    console.error("Erro ao cadastrar livro:", error);
+    alert("Erro ao cadastrar livro: " + error.message);
   }
 }
 
 async function atualizarLivro(event) {
   event.preventDefault();
-
-  const id = document.getElementById("idLivro").value;
-  const livro = {
-    titulo: document.getElementById("tituloLivro").value,
-    autor: document.getElementById("autorLivro").value,
-    isbn: document.getElementById("isbnLivro").value,
-    disponivel: document.getElementById("disponivelLivro").checked,
-  };
+  const id = document.getElementById("livroId").value;
+  const titulo = document.getElementById("titulo").value;
+  const autor = document.getElementById("autor").value;
+  const isbn = document.getElementById("isbn").value;
+  const disponivel = document.getElementById("disponivel").checked;
 
   try {
-    await fetchAPI(`/livros/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(livro),
-    });
-
-    alert("Livro atualizado com sucesso!");
+    await db.atualizarLivro(id, titulo, autor, isbn, disponivel);
     document.getElementById("formLivro").reset();
-    await carregarLivros();
+    mostrarTela("dashboard");
+    alert("Livro atualizado com sucesso!");
+    await biblioteca.carregarDados();
   } catch (error) {
-    alert("Erro ao atualizar livro");
+    console.error("Erro ao atualizar livro:", error);
+    alert("Erro ao atualizar livro: " + error.message);
   }
 }
 
 async function excluirLivro(id) {
-  if (!confirm("Tem certeza que deseja excluir este livro?")) return;
-
-  try {
-    await fetchAPI(`/livros/${id}`, {
-      method: "DELETE",
-    });
-
-    alert("Livro excluído com sucesso!");
-    await carregarLivros();
-  } catch (error) {
-    alert("Erro ao excluir livro");
+  if (confirm("Tem certeza que deseja excluir este livro?")) {
+    try {
+      await db.removerLivro(id);
+      alert("Livro excluído com sucesso!");
+      await biblioteca.carregarDados();
+    } catch (error) {
+      console.error("Erro ao excluir livro:", error);
+      alert("Erro ao excluir livro: " + error.message);
+    }
   }
 }
 
 function editarLivro(livro) {
-  document.getElementById("idLivro").value = livro.idLivro;
-  document.getElementById("tituloLivro").value = livro.titulo;
-  document.getElementById("autorLivro").value = livro.autor;
-  document.getElementById("isbnLivro").value = livro.isbn;
-  document.getElementById("disponivelLivro").checked = livro.disponivel;
+  document.getElementById("livroId").value = livro.id;
+  document.getElementById("titulo").value = livro.titulo;
+  document.getElementById("autor").value = livro.autor;
+  document.getElementById("isbn").value = livro.isbn;
+  document.getElementById("disponivel").checked = livro.disponivel;
 }
 
 function atualizarTabelaLivros() {
@@ -482,9 +477,7 @@ function atualizarTabelaLivros() {
                 )})">
                     <i class="fas fa-edit"></i> Editar
                 </button>
-                <button class="btn-danger" onclick="excluirLivro(${
-                  livro.idLivro
-                })">
+                <button class="btn-danger" onclick="excluirLivro(${livro.id})">
                     <i class="fas fa-trash"></i> Excluir
                 </button>
             </td>
@@ -505,46 +498,31 @@ async function carregarEmprestimos() {
 
 async function cadastrarEmprestimo(event) {
   event.preventDefault();
-
-  const emprestimo = {
-    livro: {
-      idLivro: document.getElementById("livroEmprestimo").value,
-    },
-    socio: {
-      idSocio: document.getElementById("socioEmprestimo").value,
-    },
-    dataEmprestimo: new Date().toISOString().split("T")[0],
-    status: "EMPRESTADO",
-  };
+  const membroId = document.getElementById("membroId").value;
+  const livroId = document.getElementById("livroId").value;
 
   try {
-    await fetchAPI("/emprestimos", {
-      method: "POST",
-      body: JSON.stringify(emprestimo),
-    });
-
-    alert("Empréstimo registrado com sucesso!");
+    await db.realizarEmprestimo(membroId, livroId);
     document.getElementById("formEmprestimo").reset();
-    await carregarEmprestimos();
-    await carregarLivros();
+    mostrarTela("dashboard");
+    alert("Empréstimo realizado com sucesso!");
+    await biblioteca.carregarDados();
   } catch (error) {
-    alert("Erro ao registrar empréstimo");
+    console.error("Erro ao realizar empréstimo:", error);
+    alert("Erro ao realizar empréstimo: " + error.message);
   }
 }
 
 async function devolverLivro(id) {
-  if (!confirm("Confirmar devolução do livro?")) return;
-
-  try {
-    await fetchAPI(`/emprestimos/${id}/devolver`, {
-      method: "PUT",
-    });
-
-    alert("Livro devolvido com sucesso!");
-    await carregarEmprestimos();
-    await carregarLivros();
-  } catch (error) {
-    alert("Erro ao devolver livro");
+  if (confirm("Confirmar devolução do livro?")) {
+    try {
+      await db.devolverLivro(id);
+      alert("Livro devolvido com sucesso!");
+      await biblioteca.carregarDados();
+    } catch (error) {
+      console.error("Erro ao devolver livro:", error);
+      alert("Erro ao devolver livro: " + error.message);
+    }
   }
 }
 
