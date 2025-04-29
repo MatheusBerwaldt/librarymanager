@@ -1,31 +1,26 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
 
-let mainWindow;
+// Desabilita o sandbox para desenvolvimento
+app.commandLine.appendSwitch("no-sandbox");
+app.commandLine.appendSwitch("disable-gpu");
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  const win = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
+      enableRemoteModule: true,
     },
   });
 
-  // Desabilita o sandbox para desenvolvimento
-  app.commandLine.appendSwitch("no-sandbox");
-  app.commandLine.appendSwitch("disable-gpu");
-
   // Carrega o arquivo HTML local
-  mainWindow.loadFile("index.html");
+  win.loadFile(path.join(__dirname, "index.html"));
 
   // Abre o DevTools em desenvolvimento
-  mainWindow.webContents.openDevTools();
-
-  mainWindow.on("closed", () => {
-    mainWindow = null;
-  });
+  win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
