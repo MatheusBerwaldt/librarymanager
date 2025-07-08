@@ -1,6 +1,7 @@
 @echo off
 echo Iniciando Library Manager Frontend...
 cd frontend
-npm install
-npm start
-pause 
+echo Instalando dependencias...
+call npm install
+echo Iniciando aplicacao...
+call npm start 
