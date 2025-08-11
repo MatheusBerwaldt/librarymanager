@@ -3,6 +3,10 @@ package com.librarymanager.model;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,9 +50,11 @@ public class Livro {
 
     @ManyToOne
     @JoinColumn(name = "socio_emprestado_id")
+    @JsonBackReference("socio-livros")
     private Socio socioEmprestado;
 
     @ManyToMany(mappedBy = "livros")
+    @JsonIgnore
     private List<Emprestimo> emprestimos;
 
     // Método adicional para verificar se o livro está emprestado

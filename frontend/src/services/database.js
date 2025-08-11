@@ -3,7 +3,10 @@ const path = require("path");
 const fs = require("fs");
 
 // Garantir que o diretório do banco de dados existe
-const dbPath = path.join(__dirname, "../librarymanager.db");
+const dbPath = path.join(
+  __dirname,
+  "/home/matheus-berwaldt/projects/librarymanager/librarymanager.db"
+);
 const dbDir = path.dirname(dbPath);
 
 if (!fs.existsSync(dbDir)) {

@@ -1,6 +1,5 @@
-// Importação do módulo ipcRenderer do Electron e do módulo de banco de dados
+// Importação do módulo ipcRenderer do Electron
 const { ipcRenderer } = require("electron");
-const db = require("./src/database");
 
 // Configuração da API
 const API_URL = "http://localhost:8080/api";
@@ -43,9 +42,9 @@ class GerenciadorBiblioteca {
 
   async carregarDados() {
     try {
-      this.membros = await db.buscarMembros();
-      this.livros = await db.buscarLivros();
-      this.emprestimos = await db.buscarEmprestimos();
+      this.membros = await fetchAPI("/socios");
+      this.livros = await fetchAPI("/livros");
+      this.emprestimos = await fetchAPI("/emprestimos");
       this.atualizarDashboard();
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
@@ -55,7 +54,10 @@ class GerenciadorBiblioteca {
   // Métodos para Membros
   async adicionarMembro(nome, email, telefone) {
     try {
-      const membro = await db.adicionarMembro(nome, email, telefone);
+      const membro = await fetchAPI("/socios", {
+        method: "POST",
+        body: JSON.stringify({ nome, email, telefone }),
+      });
       await this.carregarDados();
       return membro;
     } catch (error) {
@@ -66,7 +68,7 @@ class GerenciadorBiblioteca {
 
   async removerMembro(id) {
     try {
-      await db.removerMembro(id);
+      await fetchAPI(`/socios/${id}`, { method: "DELETE" });
       await this.carregarDados();
     } catch (error) {
       console.error("Erro ao remover membro:", error);
@@ -77,7 +79,10 @@ class GerenciadorBiblioteca {
   // Métodos para Livros
   async adicionarLivro(titulo, autor, isbn) {
     try {
-      const livro = await db.adicionarLivro(titulo, autor, isbn);
+      const livro = await fetchAPI("/livros", {
+        method: "POST",
+        body: JSON.stringify({ titulo, autor, isbn }),
+      });
       await this.carregarDados();
       return livro;
     } catch (error) {
@@ -88,7 +93,7 @@ class GerenciadorBiblioteca {
 
   async removerLivro(id) {
     try {
-      await db.removerLivro(id);
+      await fetchAPI(`/livros/${id}`, { method: "DELETE" });
       await this.carregarDados();
     } catch (error) {
       console.error("Erro ao remover livro:", error);
@@ -100,13 +105,10 @@ class GerenciadorBiblioteca {
     try {
       const livro = this.livros.find((l) => l.id === id);
       if (livro) {
-        await db.atualizarLivro(
-          livro.titulo,
-          livro.autor,
-          livro.isbn,
-          disponivel,
-          id
-        );
+        await fetchAPI(`/livros/${id}`, {
+          method: "PUT",
+          body: JSON.stringify({ ...livro, disponivel }),
+        });
         await this.carregarDados();
       }
     } catch (error) {
@@ -116,11 +118,27 @@ class GerenciadorBiblioteca {
   }
 
   // Métodos para Empréstimos
-  async realizarEmprestimo(membroId, livroId) {
+  async realizarEmprestimo(idSocio, idLivros, dataDevolucaoPrevista) {
     try {
-      const emprestimo = await db.realizarEmprestimo(membroId, livroId);
+      const payload = {
+        socio: { idSocio },
+        livros: idLivros.map((id) => ({ idLivro: id })),
+        dataDevolucaoPrevista,
+      };
+      console.log("Enviando payload para /emprestimos:", payload);
+      const response = await fetch(`${API_URL}/emprestimos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      console.log("Status da resposta:", response.status);
+      const data = await response.json().catch((e) => {
+        console.error("Erro ao fazer parse do JSON da resposta:", e);
+        return null;
+      });
+      console.log("Resposta recebida:", data);
       await this.carregarDados();
-      return emprestimo;
+      return data;
     } catch (error) {
       console.error("Erro ao realizar empréstimo:", error);
       throw error;
@@ -129,7 +147,9 @@ class GerenciadorBiblioteca {
 
   async devolverLivro(emprestimoId) {
     try {
-      await db.devolverLivro(emprestimoId);
+      await fetchAPI(`/emprestimos/${emprestimoId}/devolver`, {
+        method: "POST",
+      });
       await this.carregarDados();
     } catch (error) {
       console.error("Erro ao devolver livro:", error);

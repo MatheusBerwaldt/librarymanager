@@ -1,6 +1,9 @@
 package com.librarymanager.model;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,4 +25,12 @@ public class Socio {
     private LocalDate dataNascimento;
     private String profissao;
     private String telefone;
+
+    @OneToMany(mappedBy = "socioEmprestado")
+    @JsonIgnore
+    private List<Livro> livrosEmprestados;
+
+    @OneToMany(mappedBy = "socio")
+    @JsonIgnore
+    private List<Emprestimo> emprestimos;
 }

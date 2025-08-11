@@ -20,8 +20,10 @@ function createWindow() {
   // Carrega o arquivo HTML local
   win.loadFile(path.join(__dirname, "src/index.html"));
 
-  // Abre o DevTools em desenvolvimento
-  win.webContents.openDevTools();
+  // Abre o DevTools após o carregamento da janela
+  win.webContents.on("did-finish-load", () => {
+    win.webContents.openDevTools();
+  });
 }
 
 app.whenReady().then(() => {
