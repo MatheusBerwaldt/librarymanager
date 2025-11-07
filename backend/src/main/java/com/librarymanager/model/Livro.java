@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -57,7 +56,6 @@ public class Livro {
     @JsonIgnore
     private List<Emprestimo> emprestimos;
 
-    // Método adicional para verificar se o livro está emprestado
     public boolean isEmprestado() {
         return !disponivel;
     }

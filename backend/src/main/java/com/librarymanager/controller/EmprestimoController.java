@@ -46,12 +46,29 @@ public class EmprestimoController {
 
     // Criar um empréstimo
     @PostMapping
-    public ResponseEntity<Emprestimo> criarEmprestimo(@RequestBody Emprestimo emprestimo) {
+    public ResponseEntity<?> criarEmprestimo(@RequestBody Emprestimo emprestimo) {
         try {
             Emprestimo novoEmprestimo = emprestimoService.registrarEmprestimo(emprestimo);
             return ResponseEntity.ok(novoEmprestimo);  // Retorna o empréstimo criado
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(null);  // Se houver erro no empréstimo (livro não disponível)
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));  // Retorna a mensagem de erro
+        }
+    }
+    
+    // Classe para resposta de erro
+    public static class ErrorResponse {
+        private String message;
+        
+        public ErrorResponse(String message) {
+            this.message = message;
+        }
+        
+        public String getMessage() {
+            return message;
+        }
+        
+        public void setMessage(String message) {
+            this.message = message;
         }
     }
 
