@@ -312,6 +312,7 @@ async function salvarSocio(event) {
 // ── Empréstimos ───────────────────────────────────────────────────────────────
 
 let filtroAtual = 'todos';
+let livrosDisponiveis = [];
 
 async function carregarEmprestimos(filtro) {
   filtroAtual = filtro;
@@ -352,11 +353,28 @@ function filtrarEmprestimos(filtro) {
   carregarEmprestimos(filtro);
 }
 
+function renderizarOpcoesLivros() {
+  const query = document.getElementById('emprestimo-livros-search').value.toLowerCase();
+  const select = document.getElementById('emprestimo-livros');
+  const selecionados = new Set(Array.from(select.selectedOptions).map(o => o.value));
+
+  const filtrados = livrosDisponiveis.filter(l =>
+    l.nomeLivro.toLowerCase().includes(query) ||
+    l.autorLivro.toLowerCase().includes(query)
+  );
+
+  select.innerHTML = filtrados.length === 0
+    ? '<option disabled>Nenhum livro encontrado</option>'
+    : filtrados.map(l =>
+        `<option value="${l.idLivro}" ${selecionados.has(String(l.idLivro)) ? 'selected' : ''}>${l.nomeLivro} — ${l.autorLivro}</option>`
+      ).join('');
+}
+
 async function abrirModalEmprestimo() {
   try {
     const [rawSocios, rawLivros] = await Promise.all([get('/socios'), get('/livros/disponiveis')]);
     const socios = rawSocios.filter(s => s != null);
-    const livros = rawLivros.filter(l => l != null);
+    livrosDisponiveis = rawLivros.filter(l => l != null);
 
     const selSocio = document.getElementById('emprestimo-socio');
     selSocio.innerHTML = socios.length === 0
@@ -364,19 +382,14 @@ async function abrirModalEmprestimo() {
       : '<option value="">Selecione um sócio...</option>' +
         socios.map(s => `<option value="${s.idSocio}">${s.nome}</option>`).join('');
 
-    const selLivros = document.getElementById('emprestimo-livros');
-    selLivros.innerHTML = livros.length === 0
-      ? '<option disabled>Nenhum livro disponível</option>'
-      : livros.map(l => `<option value="${l.idLivro}">${l.nomeLivro} — ${l.autorLivro}</option>`).join('');
-
     const amanha = new Date();
     amanha.setDate(amanha.getDate() + 14);
-    document.getElementById('emprestimo-devolucao').value = amanha.toISOString().split('T')[0];
 
     esconderErro('emprestimo-erro');
-    document.getElementById('formEmprestimo').reset();
     selSocio.value = '';
+    document.getElementById('emprestimo-livros-search').value = '';
     document.getElementById('emprestimo-devolucao').value = amanha.toISOString().split('T')[0];
+    renderizarOpcoesLivros();
 
     new bootstrap.Modal('#modalEmprestimo').show();
   } catch (err) {
@@ -462,6 +475,8 @@ function escapeHtml(str) {
 }
 
 // ── Inicialização ─────────────────────────────────────────────────────────────
+
+document.getElementById('emprestimo-livros-search').addEventListener('input', renderizarOpcoesLivros);
 
 (async () => {
   await verificarConexao();
