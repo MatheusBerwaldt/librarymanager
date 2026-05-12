@@ -6,15 +6,10 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 @Getter
@@ -23,19 +18,23 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "\"Livro\"")
+@Table(name = "livros")
 public class Livro {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private Long idLivro;
 
+    @NotBlank(message = "Nome do livro é obrigatório")
     @Column(nullable = false)
     private String nomeLivro;
-    
+
+    @NotBlank(message = "Autor é obrigatório")
     @Column(nullable = false)
     private String autorLivro;
 
+    @NotNull(message = "Data de lançamento é obrigatória")
     @Column(nullable = false)
     private LocalDate dataLancamento;
 
@@ -43,8 +42,10 @@ public class Livro {
 
     private String codBarras;
 
-    private boolean disponivel;
+    @Builder.Default
+    private boolean disponivel = true;
 
+    @PositiveOrZero(message = "Preço não pode ser negativo")
     private double precoLivro;
 
     @ManyToOne

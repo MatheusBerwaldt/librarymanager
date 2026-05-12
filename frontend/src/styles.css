@@ -1,0 +1,110 @@
+body {
+  background-color: #f5f6fa;
+  font-size: 0.9rem;
+}
+
+.navbar-brand {
+  font-size: 1.1rem;
+}
+
+.section {
+  animation: fadeIn 0.15s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.stat-card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  color: #6c757d;
+  margin-top: 4px;
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.card-header {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  border-radius: 10px 10px 0 0 !important;
+}
+
+.table th {
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom-width: 1px;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.badge-disponivel {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.badge-emprestado {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge-devolvido {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.badge-atrasado {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.action-btn {
+  padding: 2px 8px;
+  font-size: 0.8rem;
+}
+
+#search-livros, #search-socios {
+  min-width: 240px;
+}
+
+.modal-content {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+select[multiple] {
+  min-height: 140px;
+}
+
+.nav-link {
+  font-size: 0.88rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #adb5bd;
+  font-size: 0.9rem;
+}

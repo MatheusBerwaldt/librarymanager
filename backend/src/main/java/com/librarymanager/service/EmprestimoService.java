@@ -25,75 +25,70 @@ public class EmprestimoService {
     @Autowired
     private SocioRepository socioRepository;
 
-    // Registrar um empréstimo
-    public Emprestimo registrarEmprestimo(Emprestimo emprestimo) {
-        // Verifica se o sócio existe
-        Socio socio = socioRepository.findById(emprestimo.getSocio().getIdSocio())
-                .orElseThrow(() -> new NoSuchElementException("Sócio não encontrado!"));
-
-        // Verifica se os livros estão disponíveis
-        for (Livro livro : emprestimo.getLivros()) {
-            Livro livroAtualizado = livroRepository.findById(livro.getIdLivro())
-                    .orElseThrow(() -> new NoSuchElementException("Livro não encontrado!"));
-            
-            if (!livroAtualizado.isDisponivel()) {
-                throw new RuntimeException("Livro " + livroAtualizado.getCodBarras() + " não está disponível!");
-            }
-            
-            // Marca o livro como não disponível e associa ao sócio
-            livroAtualizado.setDisponivel(false);
-            livroAtualizado.setSocioEmprestado(socio);
-            livroRepository.save(livroAtualizado);
-        }
-        
-        emprestimo.setDataEmprestimo(LocalDate.now());
-        return emprestimoRepository.save(emprestimo);  // Salva o empréstimo
-    }
-
-    // Registrar devolução de empréstimo
-    public Emprestimo registrarDevolucao(Long emprestimoId) {
-        Emprestimo emprestimo = emprestimoRepository.findById(emprestimoId)
-                .orElseThrow(() -> new NoSuchElementException("Empréstimo não encontrado!"));
-    
-        if (emprestimo.getDataDevolucaoReal() != null) {
-            throw new IllegalStateException("Este empréstimo já foi devolvido!");
-        }
-    
-        emprestimo.setDataDevolucaoReal(LocalDate.now());  // Define a data de devolução real
-    
-        // Marca os livros como disponíveis novamente
-        for (Livro livro : emprestimo.getLivros()) {
-            Livro livroAtualizado = livroRepository.findById(livro.getIdLivro())
-                    .orElseThrow(() -> new NoSuchElementException("Livro não encontrado!"));
-            
-            livroAtualizado.setDisponivel(true);
-            livroAtualizado.setSocioEmprestado(null);
-            livroRepository.save(livroAtualizado);
-        }
-    
-        return emprestimoRepository.save(emprestimo);  // Salva o empréstimo após a devolução
-    }
-
-    // Listar todos os empréstimos
     public List<Emprestimo> listarTodos() {
         return emprestimoRepository.findAll();
     }
 
-    // Buscar empréstimo por ID
+    public List<Emprestimo> listarAtivos() {
+        return emprestimoRepository.findByDataDevolucaoRealIsNull();
+    }
+
+    public List<Emprestimo> listarAtrasados() {
+        return emprestimoRepository.findAtrasados(LocalDate.now());
+    }
+
+    public List<Emprestimo> listarPorSocio(Long socioId) {
+        Socio socio = socioRepository.findById(socioId)
+                .orElseThrow(() -> new NoSuchElementException("Sócio não encontrado!"));
+        return emprestimoRepository.findBySocio(socio);
+    }
+
     public Emprestimo buscarPorId(Long id) {
         return emprestimoRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Empréstimo não encontrado!"));
     }
 
-    // Listar empréstimos ativos (não devolvidos)
-    public List<Emprestimo> listarEmprestimosAtivos() {
-        return emprestimoRepository.findByDataDevolucaoRealIsNull();
+    public Emprestimo registrar(Emprestimo emprestimo) {
+        Socio socio = socioRepository.findById(emprestimo.getSocio().getIdSocio())
+                .orElseThrow(() -> new NoSuchElementException("Sócio não encontrado!"));
+
+        List<Livro> livros = emprestimo.getLivros().stream()
+                .map(l -> {
+                    Livro livro = livroRepository.findById(l.getIdLivro())
+                            .orElseThrow(() -> new NoSuchElementException("Livro não encontrado: " + l.getIdLivro()));
+                    if (!livro.isDisponivel()) {
+                        throw new RuntimeException("Livro '" + livro.getNomeLivro() + "' não está disponível");
+                    }
+                    livro.setDisponivel(false);
+                    livro.setSocioEmprestado(socio);
+                    return livroRepository.save(livro);
+                })
+                .toList();
+
+        emprestimo.setSocio(socio);
+        emprestimo.setLivros(livros);
+        emprestimo.setDataEmprestimo(LocalDate.now());
+        return emprestimoRepository.save(emprestimo);
     }
 
-    // Listar empréstimos por sócio
-    public List<Emprestimo> listarEmprestimosPorSocio(Long socioId) {
-        Socio socio = socioRepository.findById(socioId)
-                .orElseThrow(() -> new NoSuchElementException("Sócio não encontrado!"));
-        return emprestimoRepository.findBySocio(socio);
+    public Emprestimo registrarDevolucao(Long emprestimoId) {
+        Emprestimo emprestimo = emprestimoRepository.findById(emprestimoId)
+                .orElseThrow(() -> new NoSuchElementException("Empréstimo não encontrado!"));
+
+        if (emprestimo.getDataDevolucaoReal() != null) {
+            throw new IllegalStateException("Este empréstimo já foi devolvido!");
+        }
+
+        emprestimo.setDataDevolucaoReal(LocalDate.now());
+
+        emprestimo.getLivros().forEach(livro -> {
+            Livro l = livroRepository.findById(livro.getIdLivro())
+                    .orElseThrow(() -> new NoSuchElementException("Livro não encontrado!"));
+            l.setDisponivel(true);
+            l.setSocioEmprestado(null);
+            livroRepository.save(l);
+        });
+
+        return emprestimoRepository.save(emprestimo);
     }
 }

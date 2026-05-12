@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Manager</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand navbar-dark bg-dark px-3">
+  <span class="navbar-brand fw-bold"><i class="bi bi-book-half me-2"></i>Library Manager</span>
+  <div class="navbar-nav me-auto">
+    <a class="nav-link active" data-section="dashboard" href="#"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+    <a class="nav-link" data-section="livros" href="#"><i class="bi bi-journals me-1"></i>Livros</a>
+    <a class="nav-link" data-section="socios" href="#"><i class="bi bi-people me-1"></i>Sócios</a>
+    <a class="nav-link" data-section="emprestimos" href="#"><i class="bi bi-arrow-left-right me-1"></i>Empréstimos</a>
+  </div>
+  <span id="status-badge" class="badge bg-secondary"><i class="bi bi-circle-fill me-1"></i>Conectando...</span>
+</nav>
+
+<div class="container-fluid py-4 px-4">
+
+  <!-- Dashboard -->
+  <div id="section-dashboard" class="section">
+    <h4 class="mb-4">Dashboard</h4>
+    <div class="row g-3 mb-4">
+      <div class="col-sm-6 col-md-4 col-xl-2">
+        <div class="card stat-card text-center">
+          <div class="card-body">
+            <div class="stat-number text-primary" id="stat-total-livros">—</div>
+            <div class="stat-label">Total de Livros</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4 col-xl-2">
+        <div class="card stat-card text-center">
+          <div class="card-body">
+            <div class="stat-number text-success" id="stat-disponiveis">—</div>
+            <div class="stat-label">Disponíveis</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4 col-xl-2">
+        <div class="card stat-card text-center">
+          <div class="card-body">
+            <div class="stat-number text-warning" id="stat-emprestados">—</div>
+            <div class="stat-label">Emprestados</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4 col-xl-2">
+        <div class="card stat-card text-center">
+          <div class="card-body">
+            <div class="stat-number text-info" id="stat-socios">—</div>
+            <div class="stat-label">Sócios</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4 col-xl-2">
+        <div class="card stat-card text-center">
+          <div class="card-body">
+            <div class="stat-number text-secondary" id="stat-ativos">—</div>
+            <div class="stat-label">Empréstimos Ativos</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4 col-xl-2">
+        <div class="card stat-card text-center">
+          <div class="card-body">
+            <div class="stat-number text-danger" id="stat-atrasados">—</div>
+            <div class="stat-label">Atrasados</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header fw-semibold">Empréstimos Ativos</div>
+      <div class="card-body p-0">
+        <table class="table table-hover table-sm mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Sócio</th>
+              <th>Livros</th>
+              <th>Emprestado em</th>
+              <th>Devolução prevista</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="dashboard-emprestimos"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Livros -->
+  <div id="section-livros" class="section d-none">
+    <div class="d-flex align-items-center mb-3 gap-2">
+      <h4 class="mb-0 me-auto">Livros</h4>
+      <input type="search" class="form-control w-auto" id="search-livros" placeholder="Buscar por título, autor ou cód...">
+      <button class="btn btn-primary" onclick="abrirModalLivro()"><i class="bi bi-plus-lg me-1"></i>Novo Livro</button>
+    </div>
+    <div class="card">
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Nome</th>
+              <th>Autor</th>
+              <th>Editora</th>
+              <th>Cód. Barras</th>
+              <th>Preço</th>
+              <th>Status</th>
+              <th class="text-end">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-livros"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sócios -->
+  <div id="section-socios" class="section d-none">
+    <div class="d-flex align-items-center mb-3 gap-2">
+      <h4 class="mb-0 me-auto">Sócios</h4>
+      <input type="search" class="form-control w-auto" id="search-socios" placeholder="Buscar por nome...">
+      <button class="btn btn-primary" onclick="abrirModalSocio()"><i class="bi bi-plus-lg me-1"></i>Novo Sócio</button>
+    </div>
+    <div class="card">
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Nome</th>
+              <th>Profissão</th>
+              <th>Telefone</th>
+              <th>Membro desde</th>
+              <th class="text-end">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-socios"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empréstimos -->
+  <div id="section-emprestimos" class="section d-none">
+    <div class="d-flex align-items-center mb-3 gap-2">
+      <h4 class="mb-0 me-auto">Empréstimos</h4>
+      <div class="btn-group" role="group">
+        <button class="btn btn-outline-secondary btn-sm active" id="filter-todos" onclick="filtrarEmprestimos('todos')">Todos</button>
+        <button class="btn btn-outline-secondary btn-sm" id="filter-ativos" onclick="filtrarEmprestimos('ativos')">Ativos</button>
+        <button class="btn btn-outline-secondary btn-sm" id="filter-atrasados" onclick="filtrarEmprestimos('atrasados')">Atrasados</button>
+      </div>
+      <button class="btn btn-primary" onclick="abrirModalEmprestimo()"><i class="bi bi-plus-lg me-1"></i>Novo Empréstimo</button>
+    </div>
+    <div class="card">
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Sócio</th>
+              <th>Livros</th>
+              <th>Emprestado em</th>
+              <th>Devolução prevista</th>
+              <th>Devolvido em</th>
+              <th>Status</th>
+              <th class="text-end">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-emprestimos"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal Livro -->
+<div class="modal fade" id="modalLivro" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLivroTitulo">Novo Livro</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formLivro" onsubmit="salvarLivro(event)">
+        <div class="modal-body">
+          <input type="hidden" id="livro-id">
+          <div class="mb-3">
+            <label class="form-label">Nome <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="livro-nome" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Autor <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="livro-autor" required>
+          </div>
+          <div class="row">
+            <div class="col mb-3">
+              <label class="form-label">Data de Lançamento <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" id="livro-data" required>
+            </div>
+            <div class="col mb-3">
+              <label class="form-label">Preço (R$)</label>
+              <input type="number" class="form-control" id="livro-preco" min="0" step="0.01" value="0">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col mb-3">
+              <label class="form-label">Editora</label>
+              <input type="text" class="form-control" id="livro-editora">
+            </div>
+            <div class="col mb-3">
+              <label class="form-label">Cód. de Barras</label>
+              <input type="text" class="form-control" id="livro-codbarras">
+            </div>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="livro-disponivel" checked>
+            <label class="form-check-label">Disponível</label>
+          </div>
+          <div id="livro-erro" class="alert alert-danger mt-3 d-none"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Sócio -->
+<div class="modal fade" id="modalSocio" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalSocioTitulo">Novo Sócio</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formSocio" onsubmit="salvarSocio(event)">
+        <div class="modal-body">
+          <input type="hidden" id="socio-id">
+          <div class="mb-3">
+            <label class="form-label">Nome <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="socio-nome" required>
+          </div>
+          <div class="row">
+            <div class="col mb-3">
+              <label class="form-label">Data de Ingresso <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" id="socio-ingresso" required>
+            </div>
+            <div class="col mb-3">
+              <label class="form-label">Data de Nascimento</label>
+              <input type="date" class="form-control" id="socio-nascimento">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col mb-3">
+              <label class="form-label">Profissão</label>
+              <input type="text" class="form-control" id="socio-profissao">
+            </div>
+            <div class="col mb-3">
+              <label class="form-label">Telefone</label>
+              <input type="text" class="form-control" id="socio-telefone">
+            </div>
+          </div>
+          <div id="socio-erro" class="alert alert-danger mt-3 d-none"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Empréstimo -->
+<div class="modal fade" id="modalEmprestimo" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Novo Empréstimo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formEmprestimo" onsubmit="salvarEmprestimo(event)">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Sócio <span class="text-danger">*</span></label>
+            <select class="form-select" id="emprestimo-socio" required></select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Livros disponíveis <span class="text-danger">*</span></label>
+            <select class="form-select" id="emprestimo-livros" multiple size="6" required></select>
+            <div class="form-text">Segure Ctrl para selecionar mais de um livro.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Data prevista de devolução <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" id="emprestimo-devolucao" required>
+          </div>
+          <div id="emprestimo-erro" class="alert alert-danger mt-3 d-none"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Registrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Confirmação -->
+<div class="modal fade" id="modalConfirm" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmTitulo">Confirmar</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="confirmMsg"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="confirmBtn">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="renderer.js"></script>
+</body>
+</html>

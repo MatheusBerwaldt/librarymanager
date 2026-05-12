@@ -6,22 +6,28 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 @Entity
 @Table(name = "socios")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Socio {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idSocio;
 
+    @NotBlank(message = "Nome é obrigatório")
     private String nome;
+
+    @NotNull(message = "Data de ingresso é obrigatória")
     private LocalDate dataIngresso;
+
     private LocalDate dataNascimento;
     private String profissao;
     private String telefone;
