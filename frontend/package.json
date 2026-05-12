@@ -4,7 +4,7 @@
   "description": "Gerenciador de Biblioteca - Interface Desktop",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron . --no-sandbox"
   },
   "devDependencies": {
     "electron": "^33.0.0"

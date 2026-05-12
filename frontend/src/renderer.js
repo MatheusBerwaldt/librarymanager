@@ -1,4 +1,4 @@
-const API = 'http://localhost:8080';
+const API = 'http://localhost:8081';
 
 // ── Navegação ─────────────────────────────────────────────────────────────────
 
@@ -110,20 +110,22 @@ async function carregarDashboard() {
       get('/emprestimos/atrasados')
     ]);
 
-    const disponiveis = livros.filter(l => l.disponivel).length;
-    document.getElementById('stat-total-livros').textContent = livros.length;
+    const livrosValidos = livros.filter(l => l != null);
+    const ativosValidos = ativos.filter(e => e != null);
+    const disponiveis = livrosValidos.filter(l => l.disponivel).length;
+    document.getElementById('stat-total-livros').textContent = livrosValidos.length;
     document.getElementById('stat-disponiveis').textContent  = disponiveis;
-    document.getElementById('stat-emprestados').textContent  = livros.length - disponiveis;
-    document.getElementById('stat-socios').textContent       = socios.length;
-    document.getElementById('stat-ativos').textContent       = ativos.length;
-    document.getElementById('stat-atrasados').textContent    = atrasados.length;
+    document.getElementById('stat-emprestados').textContent  = livrosValidos.length - disponiveis;
+    document.getElementById('stat-socios').textContent       = socios.filter(s => s != null).length;
+    document.getElementById('stat-ativos').textContent       = ativosValidos.length;
+    document.getElementById('stat-atrasados').textContent    = atrasados.filter(e => e != null).length;
 
     const tbody = document.getElementById('dashboard-emprestimos');
-    if (ativos.length === 0) {
+    if (ativosValidos.length === 0) {
       tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Nenhum empréstimo ativo</td></tr>';
       return;
     }
-    tbody.innerHTML = ativos.map(e => `
+    tbody.innerHTML = ativosValidos.map(e => `
       <tr>
         <td>${e.socio?.nome || '—'}</td>
         <td>${e.livros?.map(l => l.nomeLivro).join(', ') || '—'}</td>
@@ -148,7 +150,8 @@ document.getElementById('search-livros').addEventListener('input', e => {
 async function carregarLivros(search = '') {
   const params = search ? `?search=${encodeURIComponent(search)}` : '';
   try {
-    const livros = await get(`/livros${params}`);
+    const raw = await get(`/livros${params}`);
+    const livros = raw.filter(l => l != null);
     const tbody = document.getElementById('tabela-livros');
     if (livros.length === 0) {
       tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Nenhum livro encontrado</td></tr>';
@@ -236,7 +239,8 @@ document.getElementById('search-socios').addEventListener('input', e => {
 async function carregarSocios(search = '') {
   const params = search ? `?search=${encodeURIComponent(search)}` : '';
   try {
-    const socios = await get(`/socios${params}`);
+    const raw = await get(`/socios${params}`);
+    const socios = raw.filter(s => s != null);
     const tbody = document.getElementById('tabela-socios');
     if (socios.length === 0) {
       tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Nenhum sócio encontrado</td></tr>';
@@ -317,7 +321,8 @@ async function carregarEmprestimos(filtro) {
   const path = filtro === 'todos' ? '/emprestimos' :
                filtro === 'ativos' ? '/emprestimos/ativos' : '/emprestimos/atrasados';
   try {
-    const emprestimos = await get(path);
+    const raw = await get(path);
+    const emprestimos = raw.filter(e => e != null);
     const tbody = document.getElementById('tabela-emprestimos');
     if (emprestimos.length === 0) {
       tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Nenhum empréstimo encontrado</td></tr>';
@@ -349,7 +354,9 @@ function filtrarEmprestimos(filtro) {
 
 async function abrirModalEmprestimo() {
   try {
-    const [socios, livros] = await Promise.all([get('/socios'), get('/livros/disponiveis')]);
+    const [rawSocios, rawLivros] = await Promise.all([get('/socios'), get('/livros/disponiveis')]);
+    const socios = rawSocios.filter(s => s != null);
+    const livros = rawLivros.filter(l => l != null);
 
     const selSocio = document.getElementById('emprestimo-socio');
     selSocio.innerHTML = socios.length === 0

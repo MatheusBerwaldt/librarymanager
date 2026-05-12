@@ -40,12 +40,14 @@ npm install
 npm start
 ```
 
-A interface Electron abre automaticamente e conecta na API em `http://localhost:8080`.
+A interface Electron abre automaticamente e conecta na API em `http://localhost:8081`.
 
 ## Endpoints da API
 
 | Método | Caminho | Descrição |
 |--------|---------|-----------|
+Endpoints disponíveis em `http://localhost:8081`.
+
 | GET | `/livros` | Lista livros (aceita `?search=`) |
 | GET | `/livros/disponiveis` | Apenas livros disponíveis |
 | GET | `/livros/emprestados` | Apenas livros emprestados |

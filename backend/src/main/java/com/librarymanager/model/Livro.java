@@ -15,8 +15,6 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "livros")
 public class Livro {
@@ -42,7 +40,6 @@ public class Livro {
 
     private String codBarras;
 
-    @Builder.Default
     private boolean disponivel = true;
 
     @PositiveOrZero(message = "Preço não pode ser negativo")
